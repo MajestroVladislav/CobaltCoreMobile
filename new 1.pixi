@@ -1,0 +1,251 @@
+fon=load("sprites/mock_zone_first.png")
+cockpit=load("sprites/cockpit.png")
+cleanINPUT()
+glob=1
+set_pixel_size(4)
+
+chassis_boxy=load("sprites/chassis_boxy.png")
+cannon_artemis=load("sprites/cannon_artemis.png")
+cockpit_artemis=load("sprites/cockpit_artemis.png")
+missiles_artemis=load("sprites/missiles_artemis.png")
+wing_player=load("sprites/wing_player.png")
+wing_player_mir=load("sprites/wing_player_mir.png")
+
+startCombat=load("sprites/icons/startCombat.png")
+shield=load("sprites/icons/shield.png")
+
+m_r=load("sprites/move_right.png")
+lif=load("sprites/life.png")
+lif_cr=load("sprites/life_corner_r.png")
+lif_cl=load("sprites/life_corner_l.png")
+lif_net=load("sprites/life_net.png")
+shild=load("sprites/shild.png")
+shild_net=load("sprites/shild_net.png")
+shild_corner=load("sprites/shild_corner.png")
+vshild=load("sprites/vshild.png")
+
+cannon_cicada=load("sprites/ememy/cannon_cicada.png")
+chassis_cicada=load("sprites/ememy/chassis_cicada.png")
+cockpit_cicada=load("sprites/ememy/cockpit_cicada.png")
+wing_cicada=load("sprites/ememy/wing_cicada.png")
+wing_cicada_mir=load("sprites/ememy/wing_cicada_mir.png")
+missiles_cicada=load("sprites/ememy/missiles_artemis.png")
+
+dizzy=load("sprites/cards/dizzy.png")
+border_dizzy=load("sprites/cards/border_dizzy.png")
+energy=load("sprites/energy.png")
+deck=load("sprites/deck.png")
+exhaust=load("sprites/exhaust.png")
+base_gray=load("sprites/base_gray.png")
+menu_menu=load("sprites/menu.png")
+char_dizzy=load("sprites/char_dizzy.png")
+char_compOffline_mini=load("sprites/char_compOffline_mini.png")
+char_enemy=load("sprites/char_enemy.png")
+enemy_ship_name=load("sprites/enemy_ship_name.png")
+
+dizzy_neutral=load("sprites/dizzy_neutral_0.png")
+scrap_neutral=load("sprites/scrap_neutral_0.png")
+comp_mini=load("sprites/comp_mini_0.png")
+
+udar=new(5)
+udar[0]=1
+udar[1]=0
+udar[2]=0
+udar[3]=0
+udar[4]=0
+ha=new(5)
+for ( i = 0; i < 4; i + 1 ) {
+	ha[i]=udar
+}
+null=new(5)
+for ( i = 0; i < 5; i + 1 ) {
+	null[i]=0
+}
+ha[4]=null
+
+sdwig=0
+s=8
+
+mlife=11
+life=mlife
+mdefe=4
+defe=2
+vdefe=3
+
+mhp=8
+hp=mhp
+mbron=4
+bron=1
+vbron=6
+
+rm=5
+r=rm
+
+while (glob==1 && hp>0 && life>0){
+	twerd=new(5,INT)
+	twerd[0]=-32-sdwig*16
+	twerd[1]=-16-sdwig*16
+	twerd[2]=0-sdwig*16
+	twerd[3]=16-sdwig*16
+	twerd[4]=32-sdwig*16
+	
+	if bron > mbron { bron=mbron }
+	
+	pixi(fon,0,0)
+	pixi(cockpit,0,0,#344eba)
+	pixi(energy,-220,110)
+	print("3",-220,110)
+	pixi(deck,-185,110)
+	print("0",-185-3,110+6,WHITE,TOP | RIGHT)
+	pixi(base_gray,205,115,#344eba)
+	print("End hod",205,115)
+	pixi(deck,221,78)
+	print("0",221-3,78+6,WHITE,TOP | RIGHT)
+	pixi(exhaust,190,84)
+	print("0",190+1,84,WHITE,TOP | RIGHT)
+	
+	pixi(chassis_boxy,-1,35)													// Отрисовка корабля
+	pixi(cannon_artemis,0,10)
+	pixi(cockpit_artemis,16,10)
+	pixi(missiles_artemis,-16,10)
+	pixi(wing_player,-32,10)
+	pixi(wing_player_mir,32,10)
+	pixi(m_r,64,10)
+	t_reset()
+	t_rotate(180, 0, 1, 0)
+	pixi(m_r,64,10)
+	t_reset()
+	
+	
+	j=0													// Отрисовка хп
+	while (j<life) {
+		pixi(lif, j*4 - (mlife+mdefe-1)*2, 26)
+		if j==0 { pixi(lif_cl, - 3 -(mlife+mdefe-1)*2, 26)
+		pixi(lif_cr, (mlife-1)*4 - (mlife+mdefe-1)*2 + 2, 26) }
+		j=j+1
+	}
+	while (j<mlife) {
+		pixi(lif_net, j*4 - (mlife+mdefe-1)*2, 26)
+		j=j+1
+	}
+	while (j<mlife+defe) {
+		pixi(shild, j*4 - (mlife+mdefe-1)*2, 26)
+		j=j+1
+	}
+	while (j<mlife+mdefe) {
+		pixi(shild_net, j*4 - (mlife+mdefe-1)*2, 26)
+		j=j+1
+	}
+	while (j<mlife+mdefe+vdefe) {
+		pixi(vshild, j*4 - (mlife+mdefe-1)*2, 26)
+		j=j+1
+	}
+	if mdefe>0 || vdefe>0 { pixi(shild_corner, j*4 - (mlife+mdefe-1)*2 - 2, 26) }
+	
+	pixi(chassis_cicada,-1-sdwig*16,-105)													// Отрисовка врага
+	pixi(cannon_cicada,0-sdwig*16,-75)
+	pixi(cockpit_cicada,-16-sdwig*16,-75)
+	pixi(missiles_cicada,16-sdwig*16,-75)
+	pixi(wing_cicada,-32-sdwig*16,-75)
+	pixi(wing_cicada_mir,32-sdwig*16,-75)
+	
+	j=0													// Отрисовка хп врага
+	while (j<hp) {
+		pixi(lif, j*4 - (mhp+mbron-1)*2 -sdwig*16, -96)
+		if j==0 { pixi(lif_cl, - 3 -(mhp+mbron-1)*2 -sdwig*16, -96)
+		pixi(lif_cr, (mhp-1)*4 - (mhp+mbron-1)*2 + 2 -sdwig*16, -96) }
+		j=j+1
+	}
+	while (j<mhp) {
+		pixi(lif_net, j*4 - (mhp+mbron-1)*2 -sdwig*16, -96)
+		j=j+1
+	}
+	while (j<mhp+bron) {
+		pixi(shild, j*4 - (mhp+mbron-1)*2 -sdwig*16, -96)
+		j=j+1
+	}
+	while (j<mhp+mbron) {
+		pixi(shild_net, j*4 - (mhp+mbron-1)*2 -sdwig*16, -96)
+		j=j+1
+	}
+	while (j<mhp+mbron+vbron) {
+		pixi(vshild, j*4 - (mhp+mbron-1)*2 -sdwig*16, -96)
+		j=j+1
+	}
+	if mbron>0 || vdefe>0 { pixi(shild_corner, j*4 - (mhp+mbron-1)*2 -sdwig*16 - 2, -96) }
+	
+	pixi(menu_menu,-215,-125)
+	pixi(char_dizzy,-204,50)
+	pixi(dizzy_neutral,-204,50)
+	print("Dizzy",-210,26,#344eba)
+	pixi(char_dizzy,-204,-10)
+	pixi(dizzy_neutral,-204,-10)
+	print("Dizzy",-210,-34,#344eba)
+	pixi(char_dizzy,-204,-70)
+	pixi(dizzy_neutral,-204,-70)
+	print("Dizzy",-210,-94,#344eba)
+	pixi(char_compOffline_mini,-160,-120)
+	pixi(comp_mini,-129,-104)
+	print("Pus",-160,-127,WHITE,BOTTOM,35)
+	pixi(char_enemy,203,-84)
+	pixi(scrap_neutral,203,-84)
+	print("0.xxx",203-9,-84-24,RED)
+	pixi(enemy_ship_name,204,-120)
+	print("Cicada",204,-120)
+	
+	for ( i = 0; i < r; i + 1) {
+		if r<6 { mom=60 }
+		if r==6 { mom=55-1 }
+		if r==7 { mom=50-2 }
+		if r==8 { mom=45-3 }
+		if r==9 { mom=40-4 }
+		if r==10 { mom=35-5 }
+		pixi( dizzy, i*mom - (r-1)*mom/2, 90 )
+		pixi( border_dizzy, i*mom - (r-1)*mom/2, 90 )
+		if ha[i][0] != 0 {
+			print("1",i*mom - (r-1)*mom/2 + 5, 90 ,RED)
+			if ha[i][0]==1 { pixi(startCombat, i*mom - (r-1)*mom/2 - 5, 90) }
+		}
+		get_event()
+		if EVT [ EVT_TYPE ] == EVT_MOUSEBUTTONDOWN {
+			if EVT [ EVT_Y ] > 90-40  &&  EVT [ EVT_Y ] < 90+40  &&  EVT [ EVT_X ] > i*mom - (r-1)*mom/2 - (mom-3)/2  &&  EVT [ EVT_X ] < i*mom - (r-1)*mom/2 + (mom-3)/2 {
+				if ha[i][0]!=0  { s=0 }
+			}
+		}
+	}
+	
+	
+	get_event()
+	if EVT[ EVT_TYPE ] == EVT_QUIT  { glob=0 }
+	if EVT [ EVT_TYPE ] == EVT_MOUSEBUTTONDOWN {
+		if EVT [ EVT_X ] > -64-16  &&  EVT [ EVT_X ] < 16-64  &&  EVT [ EVT_Y ] < 30  &&  EVT [ EVT_Y ] > -10 { sdwig=sdwig-1 }
+		if EVT [ EVT_X ] > 64-16  &&  EVT [ EVT_X ] < 16+64  &&  EVT [ EVT_Y ] < 30  &&  EVT [ EVT_Y ] > -10 { sdwig=sdwig+1 }
+		cleanINPUT()
+	}
+	EVT[ EVT_X ] = -666
+	
+	if s<8 {line(-1,-25-s*20,-1,-15-s*15,WHITE)
+		s=s+1
+		i=0
+		if 25-s*20 < -50+20 {
+			line(-1,-30-s*15,-1,-15-s*15,WHITE)
+			while (i<5) {
+				if twerd[i]==0 {s=8
+				vbron=vbron-1
+				if vbron<0 {
+					bron=bron+vbron
+					vbron=0
+					if bron<0 {
+						hp=hp+bron
+						bron=0
+						}
+					}
+				}
+				i=i+1
+			}
+		}
+	} 
+	
+	frame(0)		                                // обновляем экран
+	clear()
+}

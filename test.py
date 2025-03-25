@@ -70,12 +70,6 @@ class card:
                  "<🟢>": 0, "🔫": 0, "⚡": 0, "⏰": 0, "🛑": 0, "🔥": 0, "🛡": 0, "🅿": 0, "🚀": 0, "🦠": 0, "": 0, "♦": 0,
                  "⇫": 0, "⊥": 0, "🥇": 0, "🧱": 0, "🪨": 0, "😇": 0, "✈": 0, "🕸": 0, "▩": 0, "🪑": 0, "⌚": 0,
                  "Добор": 0}
-        kartinka = {"Урон": startCombat, "Щит": shield, "Манёвр": evade, "Вщит": tempShield, "Выпуск": None, "🔶": None, "🥾": None, "⭐": None,
-             "↩": None, "↪": None, "🚘": None, "🌈": None, "🫧": None, "💾": None, "🩸": None, "📗": None, "🧧": None,
-             "<🟢>": None, "🔫": None, "⚡": None, "⏰": None, "🛑": None, "🔥": None, "🛡": None, "🅿": None, "🚀": None,
-             "🦠": None, "♦": None, "⇫": None, "⊥": None, "🥇": None, "🧱": None, "🪨": None, "😇": None, "✈": None,
-             "🕸": None, "▩": None, "🪑": None, "⌚": None, "Добор": None, "Доп": None}
-
         t = {"Урон": None, "Щит": None, "Манёвр": None, "Вщит": None, "Выпуск": None, "🔶": None, "🥾": None, "⭐": None,
              "↩": None, "↪": None, "🚘": None, "🌈": None, "🫧": None, "💾": None, "🩸": None, "📗": None, "🧧": None,
              "<🟢>": None, "🔫": None, "⚡": None, "⏰": None, "🛑": None, "🔥": None, "🛡": None, "🅿": None, "🚀": None,
@@ -133,7 +127,7 @@ class card:
 
         pixi(cr, x, y)
 
-cards=(card(перс="Киса",имя="Базовый выстрел",урон=1,щит=1,манёвр=1),card(перс="Киса",имя="Базовый щит",щит=1,урон=1,манёвр=1,вщит=1),card(перс="Киса",имя="Базовый манёвр",манёвр=1),card(перс="Диззи",имя="Большой щит",щит=3,цена=2),card(перс="Диззи",имя="Блокирующий выстрел",урон=1,вщит=1))
+cards=(card(перс="Киса",имя="Базовый выстрел",урон=1,статус={"🔶":1}),card(перс="Киса",имя="Базовый щит",щит=1,урон=1,манёвр=1,вщит=1),card(перс="Киса",имя="Базовый манёвр",манёвр=1),card(перс="Диззи",имя="Большой щит",щит=3,цена=2,статус={"♦":1}),card(перс="Диззи",имя="Блокирующий выстрел",урон=1,вщит=1))
 
 FPS = 60
 clock = time.Clock()
@@ -152,6 +146,44 @@ startCombat = loads("sprites/icons/startCombat.png")
 shield = loads("sprites/icons/shield.png")
 evade = loads("sprites/icons/evade.png")
 tempShield=loads("sprites/icons/tempShield.png")
+powerdrive=loads("sprites/icons/powerdrive.png")
+overdrive=loads("sprites/icons/overdrive.png")
+ace=loads("sprites/icons/ace.png")
+hermes=loads("sprites/icons/hermes.png")
+autododgeLeft=loads("sprites/icons/autododgeLeft.png")
+autododgeRight=loads("sprites/icons/autododgeRight.png")
+heat=loads("sprites/icons/heat.png")
+loseEvadeNextTurn=loads("sprites/icons/loseEvadeNextTurn.png")
+payback=loads("sprites/icons/payback.png")
+tempPayback=loads("sprites/icons/tempPayback.png")
+boost=loads("sprites/icons/boost.png")
+backwardsMissiles=loads("sprites/icons/backwardsMissiles.png")
+corrode=loads("sprites/icons/corrode.png")
+endlessMagazine=loads("sprites/icons/endlessMagazine.png")
+energyLessNextTurn=loads("sprites/icons/energyLessNextTurn.png")
+energyNextTurn=loads("sprites/icons/energyNextTurn.png")
+drawLessNextTurn=loads("sprites/icons/drawLessNextTurn.png")
+drawNextTurn=loads("sprites/icons/drawNextTurn.png")
+drawCard=loads("sprites/icons/drawCard.png")
+autopilot=loads("sprites/icons/autopilot.png")
+bubbleShield=loads("sprites/icons/bubbleShield.png")
+mitosis=loads("sprites/icons/mitosis.png")
+quarry=loads("sprites/icons/quarry.png")
+serenity=loads("sprites/icons/serenity.png")
+stunCharge=loads("sprites/icons/stunCharge.png")
+stunSource=loads("sprites/icons/stunSource.png")
+tableFlip=loads("sprites/icons/tableFlip.png")
+timeStop=loads("sprites/icons/timeStop.png")
+engineStall=loads("sprites/icons/engineStall.png")
+strafe=loads("sprites/icons/strafe.png")
+cleanExhaust=loads("sprites/icons/cleanExhaust.png")
+libra=loads("sprites/icons/libra.png")
+droneShift=loads("sprites/icons/droneShift.png")
+perfectShield=loads("sprites/icons/perfectShield.png")
+rockFactory=loads("sprites/icons/rockFactory.png")
+hurtBlockable=loads("sprites/icons/hurtBlockable.png")
+
+status_bg=loads("sprites/icons/status_bg.png")
 
 m_r = loads("sprites/move_right.png")
 lif = loads("sprites/life.png")
@@ -184,6 +216,12 @@ dizzy_neutral = loads("sprites/dizzy_neutral_0.png")
 scrap_neutral = loads("sprites/scrap_neutral_0.png")
 comp_mini = loads("sprites/comp_mini_0.png")
 
+kartinka = {"Урон": startCombat, "Щит": shield, "Манёвр": evade, "Вщит": tempShield, "Выпуск": None, "🔶": powerdrive, "🥾": hermes, "⭐": ace,
+             "↩": autododgeRight, "↪": autododgeLeft, "🚘": autopilot, "🌈": boost, "🫧": bubbleShield, "💾": cleanExhaust, "🩸": corrode, "📗": drawNextTurn, "🧧": drawLessNextTurn,
+             "<🟢>": droneShift, "🔫": endlessMagazine, "⚡": energyNextTurn, "⏰": energyLessNextTurn, "🛑": engineStall, "🔥": heat, "🛡": libra, "🅿": loseEvadeNextTurn, "🚀": backwardsMissiles,
+             "🦠": mitosis, "♦": overdrive, "⇫": tempPayback, "⊥": payback, "🥇": perfectShield, "🧱": hurtBlockable, "🪨": rockFactory, "😇": serenity, "✈": strafe,
+             "🕸": stunCharge, "▩": stunSource, "🪑": tableFlip, "⌚": timeStop, "Добор": drawCard, "Доп": None}
+
 sdwig = 0
 mlife = 11
 life = mlife
@@ -202,6 +240,11 @@ ha = [cards[0], cards[1], cards[2], cards[3], cards[4]]
 vustrel_flag = 0
 twerd = [0] * 5
 s = 999
+
+ef={"🔶": 0, "🥾": 0, "⭐": 0, "↩": 0, "↪": 0, "🚘": 0, "🌈": 0, "🫧": 0, "💾": 0, "🩸": 0, "📗": 0, "🧧": 0,
+    "<🟢>": 0, "🔫": 0, "⚡": 0, "⏰": 0, "🛑": 0, "🔥": 0, "🛡": 0, "🅿": 0, "🚀": 0, "🦠": 0, "": 0, "♦": 0,
+    "⇫": 0, "⊥": 0, "🥇": 0, "🧱": 0, "🪨": 0, "😇": 0, "✈": 0, "🕸": 0, "▩": 0, "🪑": 0, "⌚": 0, "Добор": 0}
+manevr=0
 
 fon = Surface(sc.get_size())
 fon.fill((255, 255, 255))
@@ -233,7 +276,7 @@ pixi(char_enemy, 203, -84, fon)
 pixi(scrap_neutral, 203, -84, fon)
 pixi(enemy_ship_name, 204, -120, fon)
 
-while True:
+while (hp>0 and life>0):
     pixi(fon, 0, 0)
 
     twerd = [-32 - sdwig * 16, -16 - sdwig * 16, 0 - sdwig * 16, 16 - sdwig * 16, 32 - sdwig * 16]
@@ -244,6 +287,26 @@ while True:
     pixi(missiles_cicada, 16 - sdwig * 16, -75)
     pixi(wing_cicada, -32 - sdwig * 16, -75)
     pixi(wing_cicada_mir, 32 - sdwig * 16, -75)
+
+    statusOtstup=0
+    statusk=0
+
+    for key, v in ef.items():
+        if v!=0:
+            statusOtstup+=1
+    if manevr>0:
+        statusOtstup += 1
+    for key, v in ef.items():
+        if v != 0:
+            statusk+=1
+            pixi(status_bg,- 6.5 - 8.5*statusOtstup + 17*statusk - statusOtstup,36)
+            pixi(kartinka[key],-2 - 6.5 - 8.5*statusOtstup + 17*statusk - statusOtstup,36)
+            pixi(font.render(str(v), True, (255, 255, 255)), 4 - 6.5 - 8.5*statusOtstup + 17*statusk - statusOtstup, 36)
+    if manevr>0:
+        statusk += 1
+        pixi(status_bg,- 6.5 - 8.5*statusOtstup + 17*statusk - statusOtstup, 36)
+        pixi(evade,-2 - 6.5 - 8.5*statusOtstup + 17*statusk - statusOtstup,36)
+        pixi(font.render(str(manevr), True, (255, 255, 255)),4 - 6.5 - 8.5*statusOtstup + 17*statusk - statusOtstup,36)
 
     j = 0  # Отрисовка хп врага
     while j < hp:
@@ -336,6 +399,11 @@ while True:
                             defe = mdefe
                     if do.вщит > 0:
                         vdefe += do.вщит
+                    if do.манёвр > 0:
+                        manevr+=do.манёвр
+                    for key, v in do.статус.items():
+                        if v != 0:
+                            ef[key] += v
 
     if vustrel_flag:
         if s < 8:

@@ -33,7 +33,7 @@ H = 1080
 W = 1920
 sc = display.set_mode((W, H))
 
-font = font.Font(None, 35)
+font = font.Font(None, 40)
 
 def pixi(img, x, y, current=sc):
     if img is not None:
@@ -70,7 +70,7 @@ class card:
                  "<🟢>": 0, "🔫": 0, "⚡": 0, "⏰": 0, "🛑": 0, "🔥": 0, "🛡": 0, "🅿": 0, "🚀": 0, "🦠": 0, "": 0, "♦": 0,
                  "⇫": 0, "⊥": 0, "🥇": 0, "🧱": 0, "🪨": 0, "😇": 0, "✈": 0, "🕸": 0, "▩": 0, "🪑": 0, "⌚": 0,
                  "Добор": 0}
-        kartinka = {"Урон": startCombat, "Щит": shield, "Манёвр": None, "Вщит": None, "Выпуск": None, "🔶": None, "🥾": None, "⭐": None,
+        kartinka = {"Урон": startCombat, "Щит": shield, "Манёвр": evade, "Вщит": tempShield, "Выпуск": None, "🔶": None, "🥾": None, "⭐": None,
              "↩": None, "↪": None, "🚘": None, "🌈": None, "🫧": None, "💾": None, "🩸": None, "📗": None, "🧧": None,
              "<🟢>": None, "🔫": None, "⚡": None, "⏰": None, "🛑": None, "🔥": None, "🛡": None, "🅿": None, "🚀": None,
              "🦠": None, "♦": None, "⇫": None, "⊥": None, "🥇": None, "🧱": None, "🪨": None, "😇": None, "✈": None,
@@ -106,20 +106,34 @@ class card:
 
         if self.перс == "Диззи" or True:
             cr = Surface(border_dizzy.get_size())
-            cr.blit(dizzy, (0, 0))
+            pixi(dizzy,0,0,cr)
             pixi(border_dizzy, 0, 0, cr)
 
-        q = -a + 1
-        for key, v in t.items():  # то же самое здесь
+        q = 1
+        text=self.имя.split()
+        for i in range(len(text)):
+            if i!=len(text)-1:
+                if len(text[i+1])+len(text[i])<12:
+                    namec = font.render(text[i]+" "+text[i+1], True, (0, 0, 0))
+                    cr.blit(namec,(7,5))
+                    i+=1
+                else:
+                    namec = font.render(text[i], True, (0, 0, 0))
+                    cr.blit(namec, (7, 5))
+                    namec = font.render(text[i+1], True, (0, 0, 0))
+                    cr.blit(namec, (7, 30))
+        for key, v in t.items():
             if t[key] is not None and key != "Доп":
                 # Проверка, что kartinka[key] загружен
                 if kartinka[key] is not None:
-                    pixi(kartinka[key], 5, 5 * q, cr)
+                    pixi(kartinka[key], -4, 12 * q - a*6//2 - a*2, cr)
+                    namec = font.render(str(t[key]), True, (255, 255, 255))
+                    pixi(namec, 4, 12 * q - a * 6 // 2 - a * 2, cr)
                     q += 1
 
         pixi(cr, x, y)
 
-cards=(card(перс="Киса",имя="🖍️ Базовый Выстрел",урон=1,щит=1),card(перс="Киса",имя="🟦 Базовый щит",щит=1),card(перс="Киса",имя="<=> Базовый манёвр",манёвр=1),card(перс="Диззи",имя="🛡 Большой щит",щит=3,цена=2),card(перс="Диззи",имя="🟪 Блокирующий выстрел",урон=1,вщит=1))
+cards=(card(перс="Киса",имя="Базовый выстрел",урон=1,щит=1,манёвр=1),card(перс="Киса",имя="Базовый щит",щит=1,урон=1,манёвр=1,вщит=1),card(перс="Киса",имя="Базовый манёвр",манёвр=1),card(перс="Диззи",имя="Большой щит",щит=3,цена=2),card(перс="Диззи",имя="Блокирующий выстрел",урон=1,вщит=1))
 
 FPS = 60
 clock = time.Clock()
@@ -136,6 +150,8 @@ wing_player_mir = loads("sprites/wing_player_mir.png")
 
 startCombat = loads("sprites/icons/startCombat.png")
 shield = loads("sprites/icons/shield.png")
+evade = loads("sprites/icons/evade.png")
+tempShield=loads("sprites/icons/tempShield.png")
 
 m_r = loads("sprites/move_right.png")
 lif = loads("sprites/life.png")
@@ -182,7 +198,7 @@ bron = 1
 vbron = 6
 
 r = 5
-ha = [cards[0], cards[1], cards[0], cards[1], cards[0]]
+ha = [cards[0], cards[1], cards[2], cards[3], cards[4]]
 vustrel_flag = 0
 twerd = [0] * 5
 s = 999
@@ -216,8 +232,6 @@ pixi(comp_mini, -129, -104, fon)
 pixi(char_enemy, 203, -84, fon)
 pixi(scrap_neutral, 203, -84, fon)
 pixi(enemy_ship_name, 204, -120, fon)
-
-text = font.render("Привет, мир!", True, (255, 255, 255))
 
 while True:
     pixi(fon, 0, 0)
@@ -312,9 +326,16 @@ while True:
                 if r == 10:
                     mom = 35 - 5
                 if button(dizzy, i * mom - (r - 1) * mom / 2, 90):
-                    if ha[i] != 0:
-                        vustrel_flag = ha[i]
+                    do=ha[i]
+                    if do.урон!=-1:
+                        vustrel_flag = do.урон
                         s = 0
+                    if do.щит > 0:
+                        defe += do.щит
+                        if defe > mdefe:
+                            defe = mdefe
+                    if do.вщит > 0:
+                        vdefe += do.вщит
 
     if vustrel_flag:
         if s < 8:

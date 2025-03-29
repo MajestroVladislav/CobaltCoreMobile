@@ -1,13 +1,43 @@
 from pygame import *
+from pygame.locals import *
 import random
 # import os
 import time as t
 
-font.init()
+# Установка режима полноэкранного
+sc = display.set_mode((0, 0), FULLSCREEN)
+info = display.Info()
+screenWidth = info.current_w
+screenHeight = info.current_h
 
-def loads(path):  # Загружает изображение и масштабирует его
+if screenWidth == 1920:
+    scale = 4
+    font.init()
+    font = font.Font(None, 40)
+else:
+    scale=2.55
+    font.init()
+    font = font.Font(None, 27)
+
+def loads(path):
     im = image.load(path)
-    return transform.scale(im, (im.get_width() * 4, im.get_height() * 4))
+    # Масштабируем изображение
+    scaled_width = min(im.get_width(), screenWidth)
+    scaled_height = min(im.get_height(), screenHeight)
+    return transform.scale(im, (int(scaled_width*scale), int(scaled_height*scale)))
+
+def button(img, x, y):
+    mouse_pos = mouse.get_pos()
+    button_rect = img.get_rect(topleft=(
+        int(x * scale) + screenWidth // 2 - img.get_width() // 2,
+        int(y * scale) + screenHeight // 2 - img.get_height() // 2
+    ))
+    return button_rect.collidepoint(mouse_pos)
+
+def pixi(img, x, y, current=sc):
+    if img is not None:
+        current.blit(img, (int(x * scale) + current.get_width() // 2 - img.get_width() // 2,
+                           int(y * scale) + current.get_height() // 2 - img.get_height() // 2))
 
 
 def recolor(img):
@@ -18,27 +48,8 @@ def recolor(img):
     filtered_image.blit(filter_surface, (0, 0), special_flags=BLEND_RGBA_MULT)
     return filtered_image
 
-
-def button(img, x, y):
-    mouse_pos = mouse.get_pos()  # Получаем позицию мыши
-    if img.get_rect(
-            topleft=(x * 4 + 240 * 4 - img.get_width() / 2, y * 4 + 135 * 4 - img.get_height() / 2)).collidepoint(
-        mouse_pos):  # Проверяем, попадает ли мышь в область изображения
-        return True
-    return False
-
 dizzy = loads("sprites/cards/dizzy.png")
 border_dizzy = loads("sprites/cards/border_dizzy.png")
-
-H = 1080
-W = 1920
-sc = display.set_mode((W, H))
-
-font = font.Font(None, 40)
-
-def pixi(img, x, y, current=sc):
-    if img is not None:
-        current.blit(img, (x * 4 + current.get_width()/2 - img.get_width() / 2, y * 4 + current.get_height()/2 - img.get_height() / 2))
 
 class card:
     def __init__(self, **k):
@@ -431,8 +442,11 @@ def battle(sship,life,mlife,colod,razm,nam,mdefe,defe,re):
 
             if vustrel_flag:
                 if s < 8:
-                    draw.line(sc, (255, 255, 255), (240 * 4, (-25 - s * 20) * 4 + 135 * 4),
-                              (240 * 4, (-15 - s * 20) * 4 + 135 * 4), 4)
+                    x=0
+                    y=-32 - s*15
+                    draw.line(sc, (255, 255, 255), (int(x * scale) + screenWidth // 2,
+                           int(y * scale) + screenHeight // 2), (int(x * scale) + screenWidth // 2,
+                           int((y+20) * scale) + screenHeight // 2), 4)
                     s += 1
                     if 25 - s * 20 < -50 + 20:
                         for i in range(len(twerd)):

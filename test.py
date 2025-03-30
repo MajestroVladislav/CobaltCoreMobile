@@ -51,6 +51,23 @@ def recolor(img):
 dizzy = loads("sprites/cards/dizzy.png")
 border_dizzy = loads("sprites/cards/border_dizzy.png")
 
+def ee(**k):
+    f={"Урон":[],"Усиление":["",0],"Движ":-666,"Ото":[""],"Щит":[0,0],"Вщит":[0,0],"Выпуск":[" ",0],"Разд":[0,0],"Дебаф":["",0],"ЭфУрон":[0,0,"",0]}
+    for key,v in k.items():
+        f[key]=v
+    return f
+def ene(name,h=0,ef={"🔶":0},midl=[],sdwig=0,sship=[]):
+    if name == "CCD-19 Cicada":
+        if h!=0:
+            if h % 2 == 1:
+                return ee(Урон=[2 + ef["🔶"], 0])
+            if h % 2 == 0:
+                return ee(Усиление=["🔶", 1], Щит=[2, 3], Движ=0)
+        return {"Имя": "Беспилотник Цикада", "Кабина": [1], "Отсек": [3], "Пушка": [2], "Остальное": [0, 4],
+                "Твёрд": [0, 1, 2, 3, 4], "Броня": [], "Уязвимость": [], "Трещина": [],
+                "Спрайты": (chassis_cicada, wing_cicada, missiles_cicada, cannon_cicada, cockpit_cicada,  wing_cicada_mir), "Корпус": 8, "Щит": 4}
+
+
 class card:
     def __init__(self, **k):
         f = {"имя": "", "выпуск": " ", "манёвр": 0, "вщит": 0, "щит": 0, "урон": -1, "цена": 1, "перс": "", "доп": "",
@@ -225,6 +242,8 @@ dizzy_neutral = loads("sprites/dizzy_neutral_0.png")
 scrap_neutral = loads("sprites/scrap_neutral_0.png")
 comp_mini = loads("sprites/comp_mini_0.png")
 
+hint_shield=loads("sprites/hints/hint_shield.png")
+
 kartinka = {"Урон": startCombat, "Щит": shield, "Манёвр": evade, "Вщит": tempShield, "Выпуск": None, "🔶": powerdrive, "🥾": hermes, "⭐": ace,
              "↩": autododgeRight, "↪": autododgeLeft, "🚘": autopilot, "🌈": boost, "🫧": bubbleShield, "💾": cleanExhaust, "🩸": corrode, "📗": drawNextTurn, "🧧": drawLessNextTurn,
              "<🟢>": droneShift, "🔫": endlessMagazine, "⚡": energyNextTurn, "⏰": energyLessNextTurn, "🛑": engineStall, "🔥": heat, "🛡": libra, "🅿": loseEvadeNextTurn, "🚀": backwardsMissiles,
@@ -240,10 +259,10 @@ def battle(sship,life,mlife,colod,razm,nam,mdefe,defe,re):
 
     sdwig = 0
 
-    mhp = 8
-    hp = mhp
-    mbron = 4
-    bron = 1
+    vs = ene(nam)
+    enemy_ship = vs["Спрайты"]
+    hp = mhp = vs["Корпус"]
+    bron = mbron = vs["Щит"]
 
     r = razm
     ha = []
@@ -300,7 +319,6 @@ def battle(sship,life,mlife,colod,razm,nam,mdefe,defe,re):
         ener = mener
         hod += 1
         vdefe = 0
-        vbron = 0
         random.shuffle(vta)
         random.shuffle(sbros)
         if len(vta) < r:
@@ -321,14 +339,31 @@ def battle(sship,life,mlife,colod,razm,nam,mdefe,defe,re):
             pixi(font.render(str(len(vta)), True, (255, 255, 255)), -194, 121)
             pixi(font.render(str(len(burn)), True, (255, 255, 255)), 185, 89)
 
-            twerd = [-32 - sdwig * 16, -16 - sdwig * 16, 0 - sdwig * 16, 16 - sdwig * 16, 32 - sdwig * 16]
+            twerd = []
+            for i in vs["Твёрд"]:
+                twerd.append(-(len(vs["Твёрд"])-1)*8 + i * 16 + sdwig * 16)
 
-            pixi(chassis_cicada, -1 - sdwig * 16, -105)
-            pixi(cannon_cicada, 0 - sdwig * 16, -75)
-            pixi(cockpit_cicada, -16 - sdwig * 16, -75)
-            pixi(missiles_cicada, 16 - sdwig * 16, -75)
-            pixi(wing_cicada, -32 - sdwig * 16, -75)
-            pixi(wing_cicada_mir, 32 - sdwig * 16, -75)
+            for i in range(len(enemy_ship)):
+                if i == 0:
+                    pixi(enemy_ship[0], -1 - sdwig * 16, -105)
+                else:
+                    pixi(enemy_ship[i], -(len(enemy_ship))*8 + i * 16 - sdwig * 16, -75)
+
+            for i in range(len(ene(nam,hod)["Урон"])//2):
+                alpha_surface = Surface(sc.get_size(), SRCALPHA)
+                x = vs["Пушка"][ene(nam,hod)["Урон"][2*i+1]] * 16 - (len(enemy_ship)-2)*8 + i * 16 - sdwig * 16
+                y = -5
+                if (vs["Пушка"][ene(nam,hod)["Урон"][2*i+1]] - sdwig - 2) in range(-2,3):
+                    mimo = 0
+                else:
+                    mimo = 55
+                draw.lines(alpha_surface,(200,20,0,150),True,((int(x * scale) + screenWidth//2, int((y-55) * scale) + screenHeight//2),
+                                                              (int(x * scale) + screenWidth//2, int((y+mimo) * scale) + screenHeight//2)), int(16 * scale))
+                pixi(alpha_surface, 0, 0)
+                pixi(font.render(str(ene(nam,hod)["Урон"][2*i]), True, (230, 10, 0)),x,y-42)
+            if ene(nam, hod)["Щит"]!=[0,0]:
+                for qqq in range(len(ene(nam, hod)["Щит"])//2):
+                    pixi(hint_shield, -(len(enemy_ship))*8 + (ene(nam, hod)["Щит"][2 * qqq + 1]+1) * 16 - sdwig * 16, -75)
 
             statusOtstup=0
             statusk=0
@@ -467,5 +502,208 @@ def battle(sship,life,mlife,colod,razm,nam,mdefe,defe,re):
 
         while len(ha) > 0:
             sbros.append(ha.pop(0))
+        # Ход врага
+        vbron = 0
+        if (hp > 0 and life > 0):
+            for qqq in range(len(ene(nam, hod)["Урон"]) // 2):
+                x = vs["Пушка"][ene(nam, hod)["Урон"][2 * qqq + 1]] * 16 - (len(enemy_ship) - 2) * 8 + qqq * 16 - sdwig * 16
+                s = 0
+                while s < 13:
+                    pixi(fon, 0, 0)
+                    pixi(font.render(str(ener), True, (255, 255, 255)), -220, 110)
+                    pixi(font.render(str(len(sbros)), True, (255, 255, 255)), 212, 89)
+                    pixi(font.render(str(len(vta)), True, (255, 255, 255)), -194, 121)
+                    pixi(font.render(str(len(burn)), True, (255, 255, 255)), 185, 89)
+
+                    statusOtstup = 0
+                    statusk = 0
+
+                    for key, v in ef.items():
+                        if v != 0:
+                            statusOtstup += 1
+                    if manevr > 0:
+                        statusOtstup += 1
+                    for key, v in ef.items():
+                        if v != 0:
+                            statusk += 1
+                            pixi(status_bg, - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                            pixi(kartinka[key], -2 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                            pixi(font.render(str(v), True, (255, 255, 255)),
+                                 4 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                    if manevr > 0:
+                        statusk += 1
+                        pixi(status_bg, - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                        pixi(evade, -2 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                        pixi(font.render(str(manevr), True, (255, 255, 255)),
+                             4 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+
+                    j = 0  # Отрисовка хп врага
+                    while j < hp:
+                        pixi(lif, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                        if j == 0:
+                            pixi(lif_cl, - 3 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                            pixi(lif_cr, (mhp - 1) * 4 - (mhp + mbron - 1) * 2 + 2 - sdwig * 16, -96)
+                        j += 1
+                    while j < mhp:
+                        pixi(lif_net, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                        j = j + 1
+                    while j < mhp + bron:
+                        pixi(shild, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                        j = j + 1
+                    while j < mhp + mbron:
+                        pixi(shild_net, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                        j = j + 1
+                    while j < mhp + mbron + vbron:
+                        pixi(vshild, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                        j = j + 1
+                    if mbron > 0 or vdefe > 0:
+                        pixi(shild_corner, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16 - 2, -96)
+
+                    j = 0  # Отрисовка хп
+                    while j < life:
+                        pixi(lif, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                        if j == 0:
+                            pixi(lif_cl, - 3 - (mlife + mdefe - 1) * 2, 26)
+                            pixi(lif_cr, (mlife - 1) * 4 - (mlife + mdefe - 1) * 2 + 2, 26)
+                        j = j + 1
+                    while j < mlife:
+                        pixi(lif_net, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                        j = j + 1
+                    while j < mlife + defe:
+                        pixi(shild, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                        j = j + 1
+                    while j < mlife + mdefe:
+                        pixi(shild_net, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                        j = j + 1
+                    while j < mlife + mdefe + vdefe:
+                        pixi(vshild, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                        j = j + 1
+                    if mdefe > 0 or vdefe > 0:
+                        pixi(shild_corner, j * 4 - (mlife + mdefe - 1) * 2 - 2, 26)
+
+                    twerd = []
+                    for i in vs["Твёрд"]:
+                        twerd.append(-(len(vs["Твёрд"]) - 1) * 8 + i * 16 + sdwig * 16)
+
+                    for i in range(len(enemy_ship)):
+                        if i == 0:
+                            pixi(enemy_ship[0], -1 - sdwig * 16, -105)
+                        else:
+                            pixi(enemy_ship[i], -(len(enemy_ship)) * 8 + i * 16 - sdwig * 16, -75)
+
+                    if s == 3 and (vs["Пушка"][ene(nam, hod)["Урон"][2 * qqq + 1]] - sdwig - 2) in range(-2, 3):
+                        break
+                    y=-55+s*15
+                    draw.line(sc, (255, 255, 255), (int(x * scale) + screenWidth // 2, int(y * scale) + screenHeight // 2),
+                              (int(x * scale) + screenWidth // 2,int((y+20) * scale) + screenHeight // 2), 4)
+                    s += 1
+                    display.update()
+                    clock.tick(FPS)
+
+                if (vs["Пушка"][ene(nam, hod)["Урон"][2 * qqq + 1]] - sdwig - 2) in range(-2, 3):
+                    vdefe = vdefe - ene(nam, hod)["Урон"][2 * qqq]
+                    if vdefe < 0:
+                        defe = defe + vdefe
+                        vdefe = 0
+                        if defe < 0:
+                            life = life + defe
+                            defe = 0
+            if ene(nam, hod)["Щит"]!=[0,0]:
+                for qqq in range(len(ene(nam, hod)["Щит"])//2):
+                    bron+=ene(nam, hod)["Щит"][2*qqq]
+                    if bron>mbron:
+                        bron=mbron
+            if ene(nam, hod)["Усиление"]!=["",0]:
+                0==0
+            if ene(nam, hod)["Движ"] == -666:
+                if vs["Пушка"] != []:
+                    k = -sdwig - vs["Пушка"][len(vs["Пушка"]) // 4] + random.randint(0, len(enemy_ship) - 1)
+                else:
+                    k = -sdwig - vs["Отсек"][len(vs["Отсек"]) // 4] + random.randint(0, len(enemy_ship) - 1)
+                for qqq in range(abs(k)):
+                    sdwig += k // abs(k)
+                    pixi(fon, 0, 0)
+                    pixi(font.render(str(ener), True, (255, 255, 255)), -220, 110)
+                    pixi(font.render(str(len(sbros)), True, (255, 255, 255)), 212, 89)
+                    pixi(font.render(str(len(vta)), True, (255, 255, 255)), -194, 121)
+                    pixi(font.render(str(len(burn)), True, (255, 255, 255)), 185, 89)
+
+                    statusOtstup = 0
+                    statusk = 0
+
+                    for key, v in ef.items():
+                        if v != 0:
+                            statusOtstup += 1
+                    if manevr > 0:
+                        statusOtstup += 1
+                    for key, v in ef.items():
+                        if v != 0:
+                            statusk += 1
+                            pixi(status_bg, - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                            pixi(kartinka[key], -2 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                            pixi(font.render(str(v), True, (255, 255, 255)),
+                                 4 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                    if manevr > 0:
+                        statusk += 1
+                        pixi(status_bg, - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                        pixi(evade, -2 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                        pixi(font.render(str(manevr), True, (255, 255, 255)),
+                             4 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+
+                    for i in range(len(enemy_ship)):
+                        if i == 0:
+                            pixi(enemy_ship[0], -1 - sdwig * 16, -105)
+                        else:
+                            pixi(enemy_ship[i], -(len(enemy_ship)) * 8 + i * 16 - sdwig * 16, -75)
+
+                    j = 0  # Отрисовка хп врага
+                    while j < hp:
+                        pixi(lif, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                        if j == 0:
+                            pixi(lif_cl, - 3 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                            pixi(lif_cr, (mhp - 1) * 4 - (mhp + mbron - 1) * 2 + 2 - sdwig * 16, -96)
+                        j += 1
+                    while j < mhp:
+                        pixi(lif_net, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                        j = j + 1
+                    while j < mhp + bron:
+                        pixi(shild, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                        j = j + 1
+                    while j < mhp + mbron:
+                        pixi(shild_net, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                        j = j + 1
+                    while j < mhp + mbron + vbron:
+                        pixi(vshild, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                        j = j + 1
+                    if mbron > 0 or vdefe > 0:
+                        pixi(shild_corner, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16 - 2, -96)
+
+                    j = 0  # Отрисовка хп
+                    while j < life:
+                        pixi(lif, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                        if j == 0:
+                            pixi(lif_cl, - 3 - (mlife + mdefe - 1) * 2, 26)
+                            pixi(lif_cr, (mlife - 1) * 4 - (mlife + mdefe - 1) * 2 + 2, 26)
+                        j = j + 1
+                    while j < mlife:
+                        pixi(lif_net, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                        j = j + 1
+                    while j < mlife + defe:
+                        pixi(shild, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                        j = j + 1
+                    while j < mlife + mdefe:
+                        pixi(shild_net, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                        j = j + 1
+                    while j < mlife + mdefe + vdefe:
+                        pixi(vshild, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                        j = j + 1
+                    if mdefe > 0 or vdefe > 0:
+                        pixi(shild_corner, j * 4 - (mlife + mdefe - 1) * 2 - 2, 26)
+
+                    display.update()
+                    clock.tick(3)
+
+
+
 
 battle([],10,10,[cards[0], cards[1], cards[2], cards[3], cards[4]],5,"CCD-19 Cicada",4,0,[])

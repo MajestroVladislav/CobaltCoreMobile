@@ -199,6 +199,16 @@ def ene(name, h=0, ef={"🔶": 0}, midl=[], sdwig=0, sship=[]):
                 "Спрайты": (
                 chassis_cicada, wing_cicada, missiles_cicada, cannon_cicada, cockpit_cicada, wing_cicada_mir),
                 "Корпус": 8, "Щит": 4}
+    elif name == "Хаб др Монарх":
+        if h > 0:
+            if h % 2 == 1:
+                return ee(Выпуск=["▼", 2])
+            if h % 2 == 0:
+                return ee(Выпуск=["⟰", 0, "ᐁ", 2],)
+        return {"Имя": name, "Кабина": [1], "Отсек": [0, 2], "Пушка": [], "Остальное": [3], "Твёрд": [0, 1, 2, 3],
+                "Броня": [], "Уязвимость": [], "Трещина": [],"Спрайты": (
+                chassis_cicada, missiles_cicada, cockpit_cicada, missiles_cicada, wing_cicada_mir), "Корпус": 4,
+                "Щит": 8}
 
 
 class card:
@@ -379,6 +389,7 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
     pixi(font.render(nam, True, (255, 255, 255)), 202, -120, fon)
 
     vbron = 0
+    midl=[" "]*50
     while (hp > 0 and life > 0):
         ener = mener
         hod += 1
@@ -405,11 +416,11 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
 
             twerd = []
             for i in vs["Твёрд"]:
-                twerd.append(-(len(vs["Твёрд"]) - 1) * 8 + i * 16 + sdwig * 16)
+                twerd.append(-(len(vs["Твёрд"]) - 1) * 8 + i * 16 + sdwig * 16 - len(enemy_ship)%2 * 8)
 
             for i in range(len(ene(nam, hod)["Урон"]) // 2):
                 alpha_surface = Surface(sc.get_size(), SRCALPHA)
-                x = vs["Пушка"][ene(nam, hod)["Урон"][2 * i + 1]] * 16 - (len(enemy_ship) - 2) * 8 + i * 16 - sdwig * 16
+                x = vs["Пушка"][ene(nam, hod)["Урон"][2 * i + 1]] * 16 - (len(enemy_ship) - 2) * 8 + i * 16 - sdwig * 16 - len(enemy_ship)%2 * 8
                 y = -5
                 if (vs["Пушка"][ene(nam, hod)["Урон"][2 * i + 1]] - sdwig - 2) in range(-2, 3):
                     mimo = 0
@@ -425,7 +436,7 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
                 for i in range(len(ene(nam, hod)["ЭфУрон"]) // 4):
                     alpha_surface = Surface(sc.get_size(), SRCALPHA)
                     x = vs["Пушка"][ene(nam, hod)["ЭфУрон"][4 * i + 1]] * 16 - (
-                                len(enemy_ship) - 2) * 8 + i * 16 - sdwig * 16
+                                len(enemy_ship) - 2) * 8 + i * 16 - sdwig * 16 - len(enemy_ship)%2 * 8
                     y = -5
                     if (vs["Пушка"][ene(nam, hod)["ЭфУрон"][4 * i + 1]] - sdwig - 2) in range(-2, 3):
                         mimo = 0
@@ -440,38 +451,41 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
 
             for i in range(len(enemy_ship)):
                 if i == 0:
-                    pixi(enemy_ship[0], -1 - sdwig * 16, -105)
+                    pixi(enemy_ship[0], -1 - sdwig * 16 - len(enemy_ship)%2 * 8, -105)
                 else:
-                    pixi(enemy_ship[i], -(len(enemy_ship)) * 8 + i * 16 - sdwig * 16, -75)
+                    pixi(enemy_ship[i], -(len(enemy_ship)) * 8 + i * 16 - sdwig * 16 - len(enemy_ship)%2 * 8, -75)
 
             if ene(nam, hod)["Щит"] != [0, 0]:
                 for qqq in range(len(ene(nam, hod)["Щит"]) // 2):
                     pixi(hint_shield,
-                         -(len(enemy_ship)) * 8 + (ene(nam, hod)["Щит"][2 * qqq + 1] + 1) * 16 - sdwig * 16, -75)
+                         -(len(enemy_ship)) * 8 + (ene(nam, hod)["Щит"][2 * qqq + 1] + 1) * 16 - sdwig * 16 - len(enemy_ship)%2 * 8, -75)
             if ene(nam, hod)["Вщит"] != [0, 0]:
                 for qqq in range(len(ene(nam, hod)["Вщит"]) // 2):
                     pixi(hint_tempshield,
-                         -(len(enemy_ship)) * 8 + (ene(nam, hod)["Вщит"][2 * qqq + 1] + 1) * 16 - sdwig * 16, -75)
+                         -(len(enemy_ship)) * 8 + (ene(nam, hod)["Вщит"][2 * qqq + 1] + 1) * 16 - sdwig * 16 - len(enemy_ship)%2 * 8, -75)
             if ene(nam, hod)["Усиление"] != ["", 0, 0]:
                 for qqq in range(len(ene(nam, hod)["Усиление"]) // 3):
                     pixi(hint_status_self,
-                         -(len(enemy_ship)) * 8 + (ene(nam, hod)["Усиление"][3 * qqq + 2] + 1) * 16 - sdwig * 16, -75)
+                         -(len(enemy_ship)) * 8 + (ene(nam, hod)["Усиление"][3 * qqq + 2] + 1) * 16 - sdwig * 16 - len(enemy_ship)%2 * 8, -75)
             if ene(nam, hod)["Выпуск"] != [" ", 0]:
                 for qqq in range(len(ene(nam, hod)["Выпуск"]) // 2):
                     pixi(hint_missile,
-                         -(len(enemy_ship)) * 8 + (ene(nam, hod)["Выпуск"][2 * qqq + 1] + 1) * 16 - sdwig * 16, -75)
+                         -(len(enemy_ship)) * 8 + (ene(nam, hod)["Выпуск"][2 * qqq + 1] + 1) * 16 - sdwig * 16 - len(enemy_ship)%2 * 8, -75)
             if ene(nam, hod)["Разд"] != [0, 0]:
                 for qqq in range(len(ene(nam, hod)["Разд"]) // 2):
                     pixi(hint_card_global,
-                         -(len(enemy_ship)) * 8 + (ene(nam, hod)["Разд"][2 * qqq + 1] + 1) * 16 - sdwig * 16, -75)
+                         -(len(enemy_ship)) * 8 + (ene(nam, hod)["Разд"][2 * qqq + 1] + 1) * 16 - sdwig * 16 - len(enemy_ship)%2 * 8, -75)
             if ene(nam, hod)["Дебаф"] != ["", 0, 0]:
                 for qqq in range(len(ene(nam, hod)["Дебаф"]) // 3):
                     pixi(hint_status_global,
-                         -(len(enemy_ship)) * 8 + (ene(nam, hod)["Дебаф"][3 * qqq + 2] + 1) * 16 - sdwig * 16, -75)
+                         -(len(enemy_ship)) * 8 + (ene(nam, hod)["Дебаф"][3 * qqq + 2] + 1) * 16 - sdwig * 16 - len(enemy_ship)%2 * 8, -75)
             if ene(nam, hod)["ЭфУрон"] != [0, 0, "", 0]:
                 for qqq in range(len(ene(nam, hod)["ЭфУрон"]) // 4):
                     pixi(hint_status, -(len(enemy_ship)) * 8 + (
-                                vs["Пушка"][ene(nam, hod)["ЭфУрон"][4 * qqq + 3]] + 1) * 16 - sdwig * 16, -75)
+                                vs["Пушка"][ene(nam, hod)["ЭфУрон"][4 * qqq + 3]] + 1) * 16 - sdwig * 16 - len(enemy_ship)%2 * 8, -75)
+            for ii in range(len(midl)):
+                if midl[ii]!=" ":
+                    pixi(droneimage(midl[ii]), (ii - 25)*16, -30)
 
             statusOtstup = 0
             statusk = 0
@@ -559,9 +573,17 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
                     exit()
                 elif eve.type == MOUSEBUTTONDOWN:
                     if button(m_r, 64, 10):
-                        sdwig += 1
+                        if manevr > 0 and ef["🛑"] == 0:
+                            sdwig += 1 + ef["🥾"]
+                            for qqq in range(1 + ef["🥾"]):
+                                midl.insert(-2, midl.pop(0))
+                            manevr -= 1
                     if button(m_r, -64, 10):
-                        sdwig -= 1
+                        if manevr > 0 and ef["🛑"] == 0:
+                            sdwig -= 1 + ef["🥾"]
+                            for qqq in range(1 + ef["🥾"]):
+                                midl.insert(0, midl.pop(-2))
+                            manevr -= 1
                     if button(base_gray, 205, 115):
                         end = False
                         break
@@ -583,8 +605,37 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
                             for key, v in do.статус.items():
                                 if v != 0:
                                     ef[key] += v
-                            sbros.append(ha.pop(i))
+                            if do.выпуск != " ":
+                                wup = do.выпуск.split(" ")
+                                for w in range(len(wup)):
+                                    if ef["🚀"] > 0:
+                                        if "∆" in wup[w]:
+                                            vup = "ᐁ"
+                                        if "▲" in wup[w]:
+                                            vup = "▼"
+                                        if "⟱" in wup[w]:
+                                            vup = "⟰"
+                                        if "⸕" in wup[w]:
+                                            vup = "⸔"
+                                        if "⇖" in wup[w]:
+                                            vup = "⇘"
+                                        if "⬆" in wup[w]:
+                                            vup = "⬇"
+                                        if "⤉" in wup[w]:
+                                            vup = "⤈"
+                                    else:
+                                        vup = wup[w][-1]
+                                    sw = 0
+                                    if len(wup[w]) > 1:
+                                        if wup[w][1] == "<":
+                                            sw -= int(wup[w][0])
+                                        if wup[w][1] == ">":
+                                            sw += int(wup[w][0])
+                                    if ef["🫧"] == 0:
+                                        if sship["Имя"]=="Артемида":
+                                            midl[23+sship["Отсек"][0]+sw]=vup
 
+                            sbros.append(ha.pop(i))
             if vustrel_flag:
                 if s < 8:
                     x = 0
@@ -698,6 +749,10 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
                             pixi(enemy_ship[0], -1 - sdwig * 16, -105)
                         else:
                             pixi(enemy_ship[i], -(len(enemy_ship)) * 8 + i * 16 - sdwig * 16, -75)
+
+                    for ii in range(len(midl)):
+                        if midl[ii] != " ":
+                            pixi(droneimage(midl[ii]), (ii - 25) * 16, -30)
 
                     if s == 3 and (vs["Пушка"][ene(nam, hod)["Урон"][2 * qqq + 1]] - sdwig - 2) in range(-2, 3):
                         break
@@ -835,7 +890,27 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
                 for qqq in range(len(ene(nam, hod)["Дебаф"]) // 3):
                     ef[ene(nam, hod)["Дебаф"][3 * qqq]] += ene(nam, hod)["Дебаф"][3 * qqq + 1]
             if ene(nam, hod)["Выпуск"] != [" ", 0]:
-                0 == 0
+                for qqq in range(len(ene(nam, hod)["Выпуск"])//2):
+                    wup = ene(nam, hod)["Выпуск"][qqq*2]
+                    if ef["🚀"] > 0:
+                        if "∆" in wup[w]:
+                            vup = "ᐁ"
+                        if "▲" in wup[w]:
+                            vup = "▼"
+                        if "⟱" in wup[w]:
+                            vup = "⟰"
+                        if "⸕" in wup[w]:
+                            vup = "⸔"
+                        if "⇖" in wup[w]:
+                            vup = "⇘"
+                        if "⬆" in wup[w]:
+                            vup = "⬇"
+                        if "⤉" in wup[w]:
+                            vup = "⤈"
+                    else:
+                        vup = wup
+                    if ef["🫧"] == 0:
+                        midl[25 - sdwig - (len(vs["Спрайты"])-1)//2 + vs["Отсек"][0] + ene(nam, hod)["Выпуск"][qqq*2+1]] = vup
             if ene(nam, hod)["Разд"] != [0, 0]:
                 for qqq in range(0, len(ene(nam, hod)["Разд"]), 2):
                     if nam == "Башня":
@@ -881,9 +956,13 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
 
                 for i in range(len(enemy_ship)):
                     if i == 0:
-                        pixi(enemy_ship[0], -1 - sdwig * 16, -105)
+                        pixi(enemy_ship[0], -1 - sdwig * 16 - len(enemy_ship)%2 * 8, -105)
                     else:
-                        pixi(enemy_ship[i], -(len(enemy_ship)) * 8 + i * 16 - sdwig * 16, -75)
+                        pixi(enemy_ship[i], -(len(enemy_ship)) * 8 + i * 16 - sdwig * 16 - len(enemy_ship)%2 * 8, -75)
+
+                for ii in range(len(midl)):
+                    if midl[ii] != " ":
+                        pixi(droneimage(midl[ii]), (ii - 25) * 16, -30)
 
                 j = 0  # Отрисовка хп врага
                 while j < hp:
@@ -933,5 +1012,5 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
                 clock.tick(5)
 
 
-
-battle([], 10, 10, [cards[0], cards[1], cards[2], cards[3], cards[4], cards[5]], 5, "CCD-19 Cicada", 4, 0, [])
+korabl={"Имя":"Артемида","Кабина":[3],"Отсек":[1],"Пушка":[2],"Остальное":[0,4],"Твёрд":[0,1,2,3,4],"Броня":[],"Уязвимость":[],"Трещина":[],"1":"◢~∥⌒◣","2":"◥###◤","3":" ◹—◸ ","Корпус":12,"Щит":4}
+battle(korabl, 10, 10, [cards[0], cards[1], cards[2], cards[3], cards[4], cards[5]], 5, "Хаб др Монарх", 4, 0, [])

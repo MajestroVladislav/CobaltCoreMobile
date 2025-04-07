@@ -171,6 +171,8 @@ missile_corrode_rev = transform.flip(missile_corrode, False, True)
 missile_seeker_rev = transform.flip(missile_seeker, False, True)
 dualDrone = loads("sprites/drones/dualDrone.png")
 
+spawn = loads("sprites/icons/spawn.png")
+
 def droneimage(x):
     a="∆▲⟱⬆⤉⸕⇖⍓о⦻⊕⥮ᐁ▼⟰⬇⤈⸔⇘⇅"
     b=[drone,attackDroneMk2,shieldDrone,missile_normal,missile_heavy,missile_corrode,missile_seeker,jupiterDrone,asteroid,
@@ -290,9 +292,8 @@ class card:
                     cr.blit(namec, (7, 30))
         for key, v in t.items():
             if t[key] is not None and key == "Выпуск":
-                pixi(droneimage(t[key]), -4, 12 * q - a * 6 // 2 - a * 2, cr)
-                namec = font.render(str(t[key]), True, (255, 255, 255))
-                pixi(namec, 4, 12 * q - a * 6 // 2 - a * 2, cr)
+                pixi(spawn, -6, 12 * q - a * 6 // 2 - a * 2, cr)
+                pixi(droneimage(t[key]), 5, 12 * q - a * 6 // 2 - a * 2, cr)
                 q += 1
             elif t[key] is not None and key != "Доп" and key != "Выпуск":
                 # Проверка, что kartinka[key] загружен
@@ -343,7 +344,9 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
     burn = []
     vta = colod.copy()
     vustrel_flag = 0
-    s = 999
+    vupusk_flag = []
+    fl_=False
+    s = ss = 999
 
     ef = {"🔶": 0, "🥾": 0, "⭐": 0, "↩": 0, "↪": 0, "🚘": 0, "🌈": 0, "🫧": 0, "💾": 0, "🩸": 0, "📗": 0, "🧧": 0,
           "<🟢>": 0, "🔫": 0, "⚡": 0, "⏰": 0, "🛑": 0, "🔥": 0, "🛡": 0, "🅿": 0, "🚀": 0, "🦠": 0, "": 0, "♦": 0,
@@ -416,7 +419,7 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
 
             twerd = []
             for i in vs["Твёрд"]:
-                twerd.append(-(len(vs["Твёрд"]) - 1) * 8 + i * 16 + sdwig * 16 - len(enemy_ship)%2 * 8)
+                twerd.append(-(len(vs["Твёрд"]) - 1) * 8 + i * 16 + sdwig * 16 + len(enemy_ship)%2 * 8)
 
             for i in range(len(ene(nam, hod)["Урон"]) // 2):
                 alpha_surface = Surface(sc.get_size(), SRCALPHA)
@@ -633,29 +636,65 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
                                             sw += int(wup[w][0])
                                     if ef["🫧"] == 0:
                                         if sship["Имя"]=="Артемида":
-                                            midl[23+sship["Отсек"][0]+sw]=vup
-
+                                            vupusk_flag = [23+sship["Отсек"][0]+sw,vup]
+                                            ss = 0
                             sbros.append(ha.pop(i))
+            if len(vupusk_flag)==2:
+                if ss < 10:
+                    fl_ = False
+                    x = (vupusk_flag[0] - 25) * 16
+                    y = -10 - ss
+                    pixi(droneimage(vupusk_flag[1]), x, y)
+                    ss += 2
+                else:
+                    if midl[vupusk_flag[0]] != " " or fl_:
+                        fl_=True
+                        midl[vupusk_flag[0]] = " "
+                        if ss < 25:
+                            x = (vupusk_flag[0] - 25) * 16
+                            y = -30
+                            pixi(loads("sprites/drones/droneExplosion/droneExplosion_000"+str(ss-9)+".png"),x,y)
+                            ss += 1
+                        else:
+                            vupusk_flag = []
+                    elif midl[vupusk_flag[0]] == " ":
+                        if ss < 20:
+                            x=(vupusk_flag[0]-25)*16
+                            y = -10 - ss
+                            pixi(droneimage(vupusk_flag[1]), x, y)
+                            ss+=2
+                        else:
+                            midl[vupusk_flag[0]] = vupusk_flag[1]
+                            vupusk_flag = []
+
             if vustrel_flag:
                 if s < 8:
                     x = 0
                     y = -32 - s * 15
-                    draw.line(sc, (255, 255, 255), (int(x * scale) + screenWidth // 2,
-                                                    int(y * scale) + screenHeight // 2),
-                              (int(x * scale) + screenWidth // 2,
-                               int((y + 20) * scale) + screenHeight // 2), 4)
-                    s += 1
-                    if 25 - s * 20 < -50 + 20:
-                        for i in range(len(twerd)):
-                            if twerd[i] == 0:
-                                s = 8
-                                vbron = vbron - vustrel_flag - ef["♦"] - ef["🔶"]
-                                if vbron < 0:
-                                    bron += vbron
-                                    vbron = 0
-                                    if bron < 0:
-                                        hp += bron
-                                        bron = 0
+                    if s >= 1 and (midl[25] != " " or fl_):
+                        fl_ = True
+                        midl[25] = " "
+                        y = -30
+                        pixi(loads("sprites/drones/droneExplosion/droneExplosion_000" + str(s) + ".png"), x, y)
+                        s += 1
+                    else:
+                        fl_ = False
+                        draw.line(sc, (255, 255, 255), (int(x * scale) + screenWidth // 2,
+                                                        int(y * scale) + screenHeight // 2),
+                                  (int(x * scale) + screenWidth // 2,
+                                   int((y + 20) * scale) + screenHeight // 2), 4)
+                        s += 1
+                        if 25 - s * 20 < -50 + 20:
+                            for i in range(len(twerd)):
+                                if twerd[i] == 0:
+                                    s = 8
+                                    vbron = vbron - vustrel_flag - ef["♦"] - ef["🔶"]
+                                    if vbron < 0:
+                                        bron += vbron
+                                        vbron = 0
+                                        if bron < 0:
+                                            hp += bron
+                                            bron = 0
                 else:
                     vustrel_flag = 0
 
@@ -664,6 +703,117 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
 
         while len(ha) > 0:
             sbros.append(ha.pop(0))
+        # Ход дронов
+        for ii in range(len(midl)):
+            if midl[ii]!=" ":
+                x = (ii - 25) * 16
+                y = -30
+
+                if midl[ii] == "∆" or midl[ii] == "⇅":
+                    vustrel_flag = 1
+                    s = 0
+                if midl[ii] == "ᐁ" or midl[ii] == "⇅":
+                    vustrel_flag = 1
+                    s = 0
+                    while s < 13:
+                        pixi(fon, 0, 0)
+                        pixi(font.render(str(ener), True, (255, 255, 255)), -220, 110)
+                        pixi(font.render(str(len(sbros)), True, (255, 255, 255)), 212, 89)
+                        pixi(font.render(str(len(vta)), True, (255, 255, 255)), -194, 121)
+                        pixi(font.render(str(len(burn)), True, (255, 255, 255)), 185, 89)
+
+                        statusOtstup = 0
+                        statusk = 0
+
+                        for key, v in ef.items():
+                            if v != 0:
+                                statusOtstup += 1
+                        if manevr > 0:
+                            statusOtstup += 1
+                        for key, v in ef.items():
+                            if v != 0:
+                                statusk += 1
+                                pixi(status_bg, - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                                pixi(kartinka[key], -2 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                                pixi(font.render(str(v), True, (255, 255, 255)),
+                                     4 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                        if manevr > 0:
+                            statusk += 1
+                            pixi(status_bg, - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                            pixi(evade, -2 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                            pixi(font.render(str(manevr), True, (255, 255, 255)),
+                                 4 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+
+                        for i in range(len(enemy_ship)):
+                            if i == 0:
+                                pixi(enemy_ship[0], -1 - sdwig * 16 - len(enemy_ship) % 2 * 8, -105)
+                            else:
+                                pixi(enemy_ship[i],
+                                     -(len(enemy_ship)) * 8 + i * 16 - sdwig * 16 - len(enemy_ship) % 2 * 8, -75)
+
+                        for i in range(len(midl)):
+                            if midl[i] != " ":
+                                pixi(droneimage(midl[i]), (i - 25) * 16, -30)
+                        j = 0  # Отрисовка хп врага
+                        while j < hp:
+                            pixi(lif, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                            if j == 0:
+                                pixi(lif_cl, - 3 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                                pixi(lif_cr, (mhp - 1) * 4 - (mhp + mbron - 1) * 2 + 2 - sdwig * 16, -96)
+                            j += 1
+                        while j < mhp:
+                            pixi(lif_net, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                            j = j + 1
+                        while j < mhp + bron:
+                            pixi(shild, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                            j = j + 1
+                        while j < mhp + mbron:
+                            pixi(shild_net, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                            j = j + 1
+                        while j < mhp + mbron + vbron:
+                            pixi(vshild, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                            j = j + 1
+                        if mbron > 0 or vdefe > 0:
+                            pixi(shild_corner, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16 - 2, -96)
+
+                        j = 0  # Отрисовка хп
+                        while j < life:
+                            pixi(lif, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                            if j == 0:
+                                pixi(lif_cl, - 3 - (mlife + mdefe - 1) * 2, 26)
+                                pixi(lif_cr, (mlife - 1) * 4 - (mlife + mdefe - 1) * 2 + 2, 26)
+                            j = j + 1
+                        while j < mlife:
+                            pixi(lif_net, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                            j = j + 1
+                        while j < mlife + defe:
+                            pixi(shild, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                            j = j + 1
+                        while j < mlife + mdefe:
+                            pixi(shild_net, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                            j = j + 1
+                        while j < mlife + mdefe + vdefe:
+                            pixi(vshild, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                            j = j + 1
+                        if mdefe > 0 or vdefe > 0:
+                            pixi(shild_corner, j * 4 - (mlife + mdefe - 1) * 2 - 2, 26)
+
+                        draw.line(sc, (255, 255, 255), (int(x * scale) + screenWidth // 2, int((y*scale + 90 + s*15) * scale) + screenHeight // 2),
+                                  (int(x * scale) + screenWidth // 2, int((y*scale + 120 + s*15) * scale) + screenHeight // 2), 4)
+                        s += 1
+                        if s == 2:
+                            if ii in range(23,27+1):
+                                s = 13
+                                vdefe -= vustrel_flag
+                                if vdefe < 0:
+                                    defe += vdefe
+                                    vdefe = 0
+                                    if defe < 0:
+                                        life += defe
+                                        defe = 0
+                        display.update()
+                        clock.tick(FPS)
+
         # Ход врага
         vbron = 0
         if (hp > 0 and life > 0):
@@ -754,17 +904,24 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
                         if midl[ii] != " ":
                             pixi(droneimage(midl[ii]), (ii - 25) * 16, -30)
 
-                    if s == 3 and (vs["Пушка"][ene(nam, hod)["Урон"][2 * qqq + 1]] - sdwig - 2) in range(-2, 3):
-                        break
-                    y = -55 + s * 15
-                    draw.line(sc, (255, 255, 255),
-                              (int(x * scale) + screenWidth // 2, int(y * scale) + screenHeight // 2),
-                              (int(x * scale) + screenWidth // 2, int((y + 20) * scale) + screenHeight // 2), 4)
+                    if s >= 1 and (midl[25 + vs["Пушка"][ene(nam, hod)["Урон"][2 * qqq + 1]] - sdwig -2] != " " or fl_):
+                        fl_=True
+                        midl[25 + vs["Пушка"][ene(nam, hod)["Урон"][2 * qqq + 1]] - sdwig - 2] = " "
+                        y = -30
+                        pixi(loads("sprites/drones/droneExplosion/droneExplosion_000" + str(s) + ".png"), x, y)
+                    else:
+                        y = -55 + s * 15
+                        draw.line(sc, (255, 255, 255),
+                                  (int(x * scale) + screenWidth // 2, int(y * scale) + screenHeight // 2),
+                                  (int(x * scale) + screenWidth // 2, int((y + 20) * scale) + screenHeight // 2), 4)
+                        if s == 3 and (vs["Пушка"][ene(nam, hod)["Урон"][2 * qqq + 1]] - sdwig - 2) in range(-2, 3) and midl[
+                            25 + vs["Пушка"][ene(nam, hod)["Урон"][2 * qqq + 1]] - sdwig] == " ":
+                            break
                     s += 1
                     display.update()
                     clock.tick(FPS)
 
-                if (vs["Пушка"][ene(nam, hod)["Урон"][2 * qqq + 1]] - sdwig - 2) in range(-2, 3):
+                if (vs["Пушка"][ene(nam, hod)["Урон"][2 * qqq + 1]] - sdwig - 2) in range(-2, 3) and s == 3:
                     vdefe -= ene(nam, hod)["Урон"][2 * qqq] + enef["♦"] + enef["🔶"]
                     if vdefe < 0:
                         defe = defe + vdefe
@@ -909,8 +1066,124 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
                             vup = "⤈"
                     else:
                         vup = wup
-                    if ef["🫧"] == 0:
-                        midl[25 - sdwig - (len(vs["Спрайты"])-1)//2 + vs["Отсек"][0] + ene(nam, hod)["Выпуск"][qqq*2+1]] = vup
+                    ss=0
+                    while ss <= 20:
+                        pixi(fon, 0, 0)
+                        pixi(font.render(str(ener), True, (255, 255, 255)), -220, 110)
+                        pixi(font.render(str(len(sbros)), True, (255, 255, 255)), 212, 89)
+                        pixi(font.render(str(len(vta)), True, (255, 255, 255)), -194, 121)
+                        pixi(font.render(str(len(burn)), True, (255, 255, 255)), 185, 89)
+
+                        statusOtstup = 0
+                        statusk = 0
+
+                        for key, v in ef.items():
+                            if v != 0:
+                                statusOtstup += 1
+                        if manevr > 0:
+                            statusOtstup += 1
+                        for key, v in ef.items():
+                            if v != 0:
+                                statusk += 1
+                                pixi(status_bg, - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                                pixi(kartinka[key], -2 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                                pixi(font.render(str(v), True, (255, 255, 255)),
+                                     4 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                        if manevr > 0:
+                            statusk += 1
+                            pixi(status_bg, - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                            pixi(evade, -2 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+                            pixi(font.render(str(manevr), True, (255, 255, 255)),
+                                 4 - 6.5 - 8.5 * statusOtstup + 17 * statusk - statusOtstup, 36)
+
+                        for i in range(len(enemy_ship)):
+                            if i == 0:
+                                pixi(enemy_ship[0], -1 - sdwig * 16 - len(enemy_ship)%2 * 8, -105)
+                            else:
+                                pixi(enemy_ship[i], -(len(enemy_ship)) * 8 + i * 16 - sdwig * 16 - len(enemy_ship)%2 * 8, -75)
+
+                        j = 0  # Отрисовка хп врага
+                        while j < hp:
+                            pixi(lif, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                            if j == 0:
+                                pixi(lif_cl, - 3 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                                pixi(lif_cr, (mhp - 1) * 4 - (mhp + mbron - 1) * 2 + 2 - sdwig * 16, -96)
+                            j += 1
+                        while j < mhp:
+                            pixi(lif_net, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                            j = j + 1
+                        while j < mhp + bron:
+                            pixi(shild, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                            j = j + 1
+                        while j < mhp + mbron:
+                            pixi(shild_net, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                            j = j + 1
+                        while j < mhp + mbron + vbron:
+                            pixi(vshild, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16, -96)
+                            j = j + 1
+                        if mbron > 0 or vdefe > 0:
+                            pixi(shild_corner, j * 4 - (mhp + mbron - 1) * 2 - sdwig * 16 - 2, -96)
+
+                        j = 0  # Отрисовка хп
+                        while j < life:
+                            pixi(lif, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                            if j == 0:
+                                pixi(lif_cl, - 3 - (mlife + mdefe - 1) * 2, 26)
+                                pixi(lif_cr, (mlife - 1) * 4 - (mlife + mdefe - 1) * 2 + 2, 26)
+                            j = j + 1
+                        while j < mlife:
+                            pixi(lif_net, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                            j = j + 1
+                        while j < mlife + defe:
+                            pixi(shild, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                            j = j + 1
+                        while j < mlife + mdefe:
+                            pixi(shild_net, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                            j = j + 1
+                        while j < mlife + mdefe + vdefe:
+                            pixi(vshild, j * 4 - (mlife + mdefe - 1) * 2, 26)
+                            j = j + 1
+                        if mdefe > 0 or vdefe > 0:
+                            pixi(shild_corner, j * 4 - (mlife + mdefe - 1) * 2 - 2, 26)
+
+                        for ii in range(len(midl)):
+                            if midl[ii] != " ":
+                                pixi(droneimage(midl[ii]), (ii - 25) * 16, -30)
+
+                        if enef["🫧"] == 0:
+                            if ss < 10:
+                                fl_ = False
+                                x = -(sdwig + (len(vs["Спрайты"]) - 1) // 2 - ene(nam, hod)["Выпуск"][qqq * 2 + 1])*16
+                                y = -50 + ss
+                                pixi(droneimage(vup), x, y)
+                                ss += 2
+                            else:
+                                if midl[25 - sdwig - (len(vs["Спрайты"]) - 1) // 2 + vs["Отсек"][0] + ene(nam, hod)["Выпуск"][
+                                             qqq * 2 + 1]] != " " or fl_:
+                                    fl_ = True
+                                    if ss < 25:
+                                        midl[25 - sdwig - (len(vs["Спрайты"]) - 1) // 2 + vs["Отсек"][0] + ene(nam, hod)["Выпуск"][
+                                             qqq * 2 + 1]] = " "
+                                        y = -30
+                                        pixi(loads("sprites/drones/droneExplosion/droneExplosion_000" + str(ss - 9) + ".png"), x, y)
+                                        ss += 1
+                                    else:
+                                        break
+                                else:
+                                    if ss < 20:
+                                        x = -(sdwig + (len(vs["Спрайты"]) - 1) // 2 - ene(nam, hod)["Выпуск"][
+                                            qqq * 2 + 1]) * 16
+                                        y = -50 + ss
+                                        pixi(droneimage(vup), x, y)
+                                        ss += 2
+                                    else:
+                                        midl[25 - sdwig - (len(vs["Спрайты"]) - 1) // 2 + vs["Отсек"][0] +
+                                                 ene(nam, hod)["Выпуск"][qqq * 2 + 1]] = vup
+                                        break
+                        else:
+                            break
+                        display.update()
+                        clock.tick(FPS)
             if ene(nam, hod)["Разд"] != [0, 0]:
                 for qqq in range(0, len(ene(nam, hod)["Разд"]), 2):
                     if nam == "Башня":
@@ -1013,4 +1286,5 @@ def battle(sship, life, mlife, colod, razm, nam, mdefe, defe, re):
 
 
 korabl={"Имя":"Артемида","Кабина":[3],"Отсек":[1],"Пушка":[2],"Остальное":[0,4],"Твёрд":[0,1,2,3,4],"Броня":[],"Уязвимость":[],"Трещина":[],"1":"◢~∥⌒◣","2":"◥###◤","3":" ◹—◸ ","Корпус":12,"Щит":4}
+#battle(korabl, 10, 10, [cards[0], cards[1], cards[2], cards[3], cards[4], cards[5]], 5, "CCD-19 Cicada", 4, 0, [])
 battle(korabl, 10, 10, [cards[0], cards[1], cards[2], cards[3], cards[4], cards[5]], 5, "Хаб др Монарх", 4, 0, [])
